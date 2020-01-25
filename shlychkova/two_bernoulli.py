@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.stats as sps
 from scipy import optimize
-from bayes_testing_inner import hdr, person_coeff
+from bayes_testing_inner import hdr, person_coeff, arth
 
 
 class TwoBernoulliTesting:
@@ -12,8 +12,8 @@ class TwoBernoulliTesting:
 
     def fit(self, X, Y):
         r"""
-        :param X: выборка из распределения Бернулли
-        :param Y: выборка из распределения Бернулли
+                :param X: выборка из распределения Бернулли
+                :param Y: выборка из распределения Бернулли
         """
         self.first_sample = X
         self.second_sample = Y
@@ -21,13 +21,13 @@ class TwoBernoulliTesting:
     def dispersive_analysis(self, params_dist, alpha=0.05, hypothesis='simple vs complex', alternative='two-sided', aprior='Beta'):
         """
 
-        :param params_dist:
-            [alpha_1, beta_1, alpha_2, beta_2] - параметры априорного распределения
-        :param alpha: alpha для доверительного интервала
-        :param hypothesis: тип гипотезы
-        :param alternative: тип альтернативы
-        :param aprior: априорное растпределние
-        :return: { 'HDR': alpha% интервал, 'aposterior params': параметры распределения статистики}
+                :param params_dist:
+                    [alpha_1, beta_1, alpha_2, beta_2] - параметры априорного распределения
+                :param alpha: alpha для доверительного интервала
+                :param hypothesis: тип гипотезы
+                :param alternative: тип альтернативы
+                :param aprior: априорное растпределние
+                :return: { 'HDR': alpha% интервал, 'aposterior params': параметры распределения статистики}
         """
 
         if aprior == 'Beta' and alternative == 'two-sided' and hypothesis =='simple vs complex':
@@ -46,8 +46,16 @@ class TwoBernoulliTesting:
 
             return {'HDR': hdr(sps.norm(a, sigma), alpha), 'aposterior params': [a, sigma]}
 
-    def correlation_analysis(self):
-            return 0
+    def correlation_analysis(self, params_dist=0, alpha=0.05):
+        """
+                :param params_dist: c - степень в апрорном распредлении
+                :param alpha: alpha для доверительного интервала
+                :return: { 'HDR': alpha% интервал, 'aposterior params': параметры распределения статистики}
+        """
+        c = params_dist
+        n = len(self.first_sample)
+        theta = person_coeff(self.first_sample, self.second_sample)
+        return {'HDR': hdr(sps.norm(arth(theta), 1/n), alpha), 'aposterior params': [arth(theta), 1/n]}
 
 
 

@@ -14,13 +14,20 @@ class OneBernoulliTesting:
 
     def fit(self, X):
         """
-        :param X: выборка из распределения Бернулли
+                :param X: выборка из распределения Бернулли
         """
         self.sample = X
         self.sample_sum = X.sum()
         self.sample_len = len(X)
 
     def aprior_prob(self, params_hyp, params_dist, hypothesis='complex vs complex', alternative='less', aprior='Beta'):
+        """
+                :param params_dist: параметры априорного распределения
+                :param params_hyp: параметры гипотез
+                :param hypothesis: тип гипотезы
+                :param aprior: априорное распределение
+                :return: априорные вероятности нулевой и первой гипотезы
+        """
 
         if hypothesis == 'complex vs complex' and aprior == 'Beta':
             alpha, beta = params_dist
@@ -59,11 +66,11 @@ class OneBernoulliTesting:
 
     def aposterior_prob(self, params_hyp, params_dist, hypothesis='complex vs complex', alternative='less', aprior='Beta'):
         """
-        :param params_dist: параметры априорного распределения
-        :param params_hyp: параметры гипотез
-        :param hypothesis: тип гипотезы
-        :param aprior: априорное распределение
-        :return: апостериорная вероятность нулевой гипотезы
+                :param params_dist: параметры априорного распределения
+                :param params_hyp: параметры гипотез
+                :param hypothesis: тип гипотезы
+                :param aprior: априорное распределение
+                :return: апостериорные вероятности нулевой и первой гипотезы
         """
         if hypothesis == 'complex vs complex' and aprior == 'Beta':
 
@@ -134,6 +141,13 @@ class OneBernoulliTesting:
 
 
     def bayes_factor(self, params_hyp, params_dist, hypothesis='complex vs complex', alternative='less', aprior='Beta'):
+        """
+                :param params_dist: параметры априорного распределения
+                :param params_hyp: параметры гипотез
+                :param hypothesis: тип гипотезы
+                :param aprior: априорное распределение
+                :return: баесовский фактор
+        """
 
         p1_apost, p2_apost = self.aposterior_prob(params_hyp, params_dist, hypothesis, alternative, aprior)
         p1_apr, p2_apr = self.aprior_prob(params_hyp, params_dist, hypothesis, alternative, aprior)
@@ -141,12 +155,18 @@ class OneBernoulliTesting:
 
     def hdr(self, params_dist):
         """
-        :param params_dist: параметры априорного распределения
+                :param params_dist: параметры априорного распределения
         """
         alpha, beta = params_dist
         return hdr(sps.beta(apost_beta(alpha, beta, self.sample)))
 
     def lindi_method(self, params_hyp, params_dist):
+        """
+                :param params_dist: параметры априорного распределения
+                :param params_hyp: параметры гипотез
+                :return: область наибольшой плотности
+        """
+
         alpha, beta = params_dist
         theta = params_hyp
         dist = sps.beta(alpha + self.sample_sum, beta + self.sample_len - self.sample_sum)
